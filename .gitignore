@@ -1,0 +1,128 @@
+# Pliki skompilowane / zoptymalizowane / DLL
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Rozszerzenia C
+*.so
+
+# Dystrybucja / pakowanie
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Logi instalatora
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Raporty z testow jednostkowych / pokrycia kodu
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Tlumaczenia
+*.mo
+*.pot
+
+# Rzeczy zwiazane z Django:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Rzeczy zwiazane z Flaskiem:
+instance/
+.webassets-cache
+
+# Rzeczy zwiazane ze Scrapy:
+.scrapy
+
+# Dokumentacja Sphinx
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# PEP 582; __pypackages__
+__pypackages__/
+
+# Rzeczy zwiazane z Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Pliki sparsowane przez SageMath
+*.sage.py
+
+# Srodowiska
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak
+venv.bak
+
+# Ustawienia projektu Spyder
+.spyderproject
+.spyproject
+
+# Ustawienia projektu Rope
+.ropeproject
+
+# Dokumentacja mkdocs
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Analizator statyczny Pyre
+.pyre/
+
+# Analizator statyczny pytype
+.pytype/
+
+# Symbole debugowania Cython
+cython_debug/
+
+# Baza danych
+ksiegarnia.db

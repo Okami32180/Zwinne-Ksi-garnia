@@ -1,0 +1,50 @@
+# Główny framework
+Flask>=3.0.0
+
+# Baza danych ORM
+Flask-SQLAlchemy>=3.1.0
+SQLAlchemy>=2.0.0
+
+# Migracje bazy danych
+Flask-Migrate>=4.0.0
+
+# Formularze i walidacja
+Flask-WTF>=1.2.1
+WTForms-Alchemy>=0.18.0 # Useful for generating forms from models, optional but kept for now
+email-validator>=2.0.0 # For email validation in WTForms
+
+# Logowanie i zarządzanie sesją
+Flask-Login>=0.6.3
+
+# Werkzeug for password hashing (comes with Flask)
+
+# Obsługa żądań HTTP (for external APIs if needed, e.g. future book data import)
+requests>=2.31.0
+
+# Panel administracyjny (for future enhancements, e.g. Flask-Admin if desired)
+# Flask-Admin>=1.6.1 
+
+# Caching (for future enhancements)
+# Flask-Caching>=2.1.0
+
+# WebSockety (for future enhancements)
+# Flask-SocketIO>=5.3.6
+
+# Przetwarzanie obrazków (np. okładki książek) - can be useful for local cover handling
+Pillow>=10.2.0
+
+# Operacje na plikach PDF (np. generowanie wersji demo książki) - can be useful
+PyPDF2>=3.0.1
+
+# Zarządzanie zmiennymi środowiskowymi
+python-dotenv>=1.0.0
+
+# Narzędzia deweloperskie (examples, uncomment if used)
+Faker>=18.0.0 # For generating fake data for seeding
+# flake8
+# pytest
+# coverage
+
+# ASGI Framework & Server (for FastAPI integration)
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0

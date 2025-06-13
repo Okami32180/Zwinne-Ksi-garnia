@@ -1,0 +1,77 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_pagination %}
+
+{% block admin_title %}Zarządzanie Zamówieniami{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Zamówienia</h1>
+    {# No "Add Order" button as orders come from users #}
+</div>
+
+{# Optional: Add filter form for orders (by status, user, date range) here #}
+
+{% if orders_pagination and orders_pagination.items %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID Zam.</th>
+                        <th>Klient</th>
+                        <th>Data Zamówienia</th>
+                        <th class="text-end">Suma</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders_pagination.items %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('admin.view_order', order_id=order.id) }}">#{{ order.id }}</a>
+                        </td>
+                        <td>
+                            {% if order.uzytkownik %}
+                                <a href="{{ url_for('admin.edit_user', user_id=order.uzytkownik.id) }}">{{ order.uzytkownik.login }}</a>
+                                <br><small class="text-muted">{{ order.uzytkownik.email }}</small>
+                            {% else %}
+                                <span class="text-muted">Użytkownik usunięty</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.data_zamowienia.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="text-end fw-medium">{{ "%.2f zł"|format(order.suma_calkowita|float) }}</td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill 
+                                {% if order.status == 'zrealizowane' %}bg-success
+                                {% elif order.status in ['anulowane_przez_uzytkownika', 'blad_platnosci', 'anulowane'] %}bg-danger
+                                {% elif order.status == 'oczekujace_na_platnosc' %}bg-warning text-dark
+                                {% elif order.status == 'w_realizacji' %}bg-info text-dark
+                                {% else %}bg-secondary
+                                {% endif %}">
+                                {{ order.status.replace('_', ' ')|capitalize }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('admin.view_order', order_id=order.id) }}" class="btn btn-sm btn-outline-primary" title="Zobacz szczegóły">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ render_pagination(orders_pagination, 'admin.list_orders') }}
+</div>
+
+{% else %}
+<div class="alert alert-info">Brak zamówień do wyświetlenia.</div>
+{% endif %}
+
+{% endblock %}

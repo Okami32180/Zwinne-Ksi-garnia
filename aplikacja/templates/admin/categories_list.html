@@ -1,0 +1,80 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_pagination %} {# Assuming pagination might be added later #}
+
+{% block admin_title %}Zarządzanie Kategoriami{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Kategorie</h1>
+    <a href="{{ url_for('admin.add_category') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle-fill"></i> Dodaj nową kategorię
+    </a>
+</div>
+
+{% if kategorie %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa Kategorii</th>
+                        <th>Nadkategoria</th>
+                        <th class="text-center">Liczba Książek</th>
+                        <th class="text-end">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for kategoria_item in kategorie %} {# Changed loop variable name to avoid conflict #}
+                    <tr>
+                        <td>{{ kategoria_item.id }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_category', category_id=kategoria_item.id) }}">{{ kategoria_item.nazwa }}</a>
+                            {% if kategoria_item.opis %}<br><small class="text-muted">{{ kategoria_item.opis|truncate(50) }}</small>{% endif %}
+                        </td>
+                        <td>
+                            {% if kategoria_item.nadkategoria %}
+                                <a href="{{ url_for('admin.edit_category', category_id=kategoria_item.nadkategoria.id) }}">{{ kategoria_item.nadkategoria.nazwa }}</a>
+                            {% else %}
+                                <span class="text-muted">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary">{{ kategoria_item.ksiazki.count() }}</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('admin.edit_category', category_id=kategoria_item.id) }}" class="btn btn-sm btn-outline-primary me-1" title="Edytuj">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            {% if kategoria_item.ksiazki.count() == 0 and kategoria_item.podkategorie.count() == 0 %}
+                            <form action="{{ url_for('admin.delete_category', category_id=kategoria_item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć kategorię \'{{ kategoria_item.nazwa }}\'?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-danger" disabled title="Nie można usunąć kategorii z książkami lub podkategoriami">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# Pagination placeholder if categories become numerous #}
+{# <div class="mt-4"> #}
+    {# {{ render_pagination(categories_pagination, 'admin.list_categories') }} #}
+{# </div> #}
+
+{% else %}
+<div class="alert alert-info">Brak kategorii do wyświetlenia. <a href="{{ url_for('admin.add_category') }}">Dodaj pierwszą kategorię</a>.</div>
+{% endif %}
+
+{% endblock %}

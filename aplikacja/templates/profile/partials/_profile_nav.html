@@ -1,0 +1,36 @@
+<div class="list-group shadow-sm profile-nav mb-4">
+    <a href="{{ url_for('profile.dashboard') }}" 
+       class="list-group-item list-group-item-action {% if request.endpoint == 'profile.dashboard' %}active{% endif %}">
+       <i class="bi bi-person-badge-fill me-2"></i>Mój Profil
+    </a>
+    <a href="{{ url_for('profile.edit_profile') }}" 
+       class="list-group-item list-group-item-action {% if request.endpoint == 'profile.edit_profile' %}active{% endif %}">
+       <i class="bi bi-pencil-square me-2"></i>Edytuj Dane
+    </a>
+    <a href="{{ url_for('profile.change_password') }}" 
+       class="list-group-item list-group-item-action {% if request.endpoint == 'profile.change_password' %}active{% endif %}">
+       <i class="bi bi-key-fill me-2"></i>Zmień Hasło
+    </a>
+    <a href="{{ url_for('profile.list_addresses') }}" 
+       class="list-group-item list-group-item-action {% if request.endpoint.startswith('profile.list_addresses') or request.endpoint.startswith('profile.add_address') or request.endpoint.startswith('profile.edit_address') %}active{% endif %}">
+       <i class="bi bi-geo-alt-fill me-2"></i>Moje Adresy
+    </a>
+    <a href="{{ url_for('orders.order_history') }}" 
+       class="list-group-item list-group-item-action {% if request.blueprint == 'orders' and request.endpoint.endswith('order_history') %}active{% endif %}">
+       <i class="bi bi-receipt-cutoff me-2"></i>Historia Zamówień
+    </a>
+    <a href="{{ url_for('profile.my_ebooks') }}" 
+       class="list-group-item list-group-item-action {% if request.endpoint == 'profile.my_ebooks' %}active{% endif %}">
+       <i class="bi bi-collection-fill me-2"></i>Moje Ebooki
+    </a>
+    {% if current_user.rola == 'admin' %}
+    <a href="{{ url_for('admin.dashboard') }}" 
+       class="list-group-item list-group-item-action list-group-item-warning mt-2">
+       <i class="bi bi-speedometer2 me-2"></i>Panel Administracyjny
+    </a>
+    {% endif %}
+    <a href="{{ url_for('auth.logout') }}" 
+       class="list-group-item list-group-item-action list-group-item-danger mt-2">
+       <i class="bi bi-box-arrow-right me-2"></i>Wyloguj
+    </a>
+</div>

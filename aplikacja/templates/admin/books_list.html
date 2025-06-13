@@ -1,0 +1,86 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_pagination %}
+
+{% block admin_title %}Zarządzanie Książkami{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Książki</h1>
+    <a href="{{ url_for('admin.add_book') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle-fill"></i> Dodaj nową książkę
+    </a>
+</div>
+
+{# Optional: Add search/filter form here for admin book list #}
+
+{% if books_pagination and books_pagination.items %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 10%;">Okładka</th>
+                        <th style="width: 30%;">Tytuł</th>
+                        <th style="width: 20%;">Autor</th>
+                        <th style="width: 10%;" class="text-end">Cena</th>
+                        <th style="width: 10%;" class="text-center">Dostępna</th>
+                        <th style="width: 15%;" class="text-end">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books_pagination.items %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>
+                            <img src="{{ book.okladka_url or url_for('static', filename='images/placeholder_cover_small.png') }}" 
+                                 alt="Okładka {{ book.tytul }}" class="img-fluid rounded" style="max-height: 60px; object-fit: cover;"
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/placeholder_cover_small.png') }}';">
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_book', book_id=book.id) }}">{{ book.tytul }}</a>
+                            <br><small class="text-muted">ISBN: {{ book.isbn or 'Brak' }}</small>
+                        </td>
+                        <td>{{ book.autor }}</td>
+                        <td class="text-end">{{ "%.2f zł"|format(book.cena|float) }}</td>
+                        <td class="text-center">
+                            {% if book.dostepny %}
+                                <i class="bi bi-check-circle-fill text-success" title="Tak"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill text-danger" title="Nie"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex flex-column align-items-end">
+                                <a href="{{ url_for('books.book_details', book_id=book.id) }}" class="btn btn-sm btn-outline-info mb-1" title="Podgląd w sklepie" target="_blank" style="width: auto;">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a href="{{ url_for('admin.edit_book', book_id=book.id) }}" class="btn btn-sm btn-outline-primary mb-1" title="Edytuj" style="width: auto;">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <form action="{{ url_for('admin.delete_book', book_id=book.id) }}" method="POST" class="mb-0" onsubmit="return confirm('Czy na pewno chcesz usunąć książkę \'{{ book.tytul }}\'? Tej operacji nie można cofnąć.');" style="width: auto;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" title="Usuń">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ render_pagination(books_pagination, 'admin.list_books') }}
+</div>
+
+{% else %}
+<div class="alert alert-info">Brak książek do wyświetlenia. <a href="{{ url_for('admin.add_book') }}">Dodaj pierwszą książkę</a>.</div>
+{% endif %}
+
+{% endblock %}

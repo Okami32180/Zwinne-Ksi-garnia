@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Moje Adresy - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'profile/partials/_profile_nav.html' %}
+        </div>
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">Moje Adresy</h1>
+                <a href="{{ url_for('profile.add_address') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle-fill"></i> Dodaj nowy adres
+                </a>
+            </div>
+
+            {% if adresy %}
+                <div class="list-group shadow-sm">
+                    {% for adres in adresy %}
+                    <div class="list-group-item list-group-item-action mb-2 rounded">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                {{ adres.typ_adresu|capitalize }} 
+                                {% if adres.domyslny %}<span class="badge bg-success">Domyślny</span>{% endif %}
+                            </h5>
+                            <small class="text-muted">
+                                <a href="{{ url_for('profile.edit_address', address_id=adres.id) }}" class="btn btn-sm btn-outline-secondary me-1" title="Edytuj">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <form action="{{ url_for('profile.delete_address', address_id=adres.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć ten adres?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </small>
+                        </div>
+                        <address class="mb-1 small">
+                            <strong>{{ adres.imie }} {{ adres.nazwisko }}</strong><br>
+                            {{ adres.linia_adresu1 }}<br>
+                            {% if adres.linia_adresu2 %}{{ adres.linia_adresu2 }}<br>{% endif %}
+                            {{ adres.kod_pocztowy }} {{ adres.miasto }}<br>
+                            {{ adres.kraj }}<br>
+                            {% if adres.numer_telefonu %}Telefon: {{ adres.numer_telefonu }}{% endif %}
+                        </address>
+                        {% if not adres.domyslny %}
+                        <form action="{{ url_for('profile.set_default_address', address_id=adres.id) }}" method="POST" class="d-inline">
+                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-link p-0 text-decoration-none">Ustaw jako domyślny</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle-fill"></i> Nie masz jeszcze żadnych zapisanych adresów.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_form_field, render_submit_button %}
+
+{% block admin_title %}Ustawienia Strony{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Ustawienia Strony</h1>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        Główne Ustawienia Aplikacji
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.site_settings') }}" novalidate>
+            {{ form.hidden_tag() }} {# Includes CSRF token #}
+            
+            <div class="alert alert-info small">
+                <strong>Uwaga:</strong> Zmiana niektórych z tych ustawień może wymagać ponownego uruchomienia aplikacji, 
+                aby weszły w życie, jeśli są one wczytywane tylko przy starcie. 
+                Obecnie zapis tych ustawień jest symulowany i nie wpływa trwale na konfigurację.
+            </div>
+
+            {{ render_form_field(form.books_per_page, extra_attrs={'type': 'number', 'help_text': 'Liczba książek wyświetlanych na stronie w katalogu publicznym i listach admina.'}) }}
+            {{ render_form_field(form.admin_email, extra_attrs={'type': 'email', 'help_text': 'Główny email administratora do powiadomień systemowych.'}) }}
+
+            {# Add more settings fields here as they are added to SettingsForm #}
+            {# Example:
+            <hr>
+            <h5 class="mt-4 mb-3">Ustawienia Poczty E-mail</h5>
+            {{ render_form_field(form.mail_server, extra_attrs={'help_text': 'Adres serwera SMTP, np. smtp.googlemail.com'}) }}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ render_form_field(form.mail_port, extra_attrs={'type': 'number', 'help_text': 'Port serwera SMTP, np. 587 dla TLS'}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ render_form_field(form.mail_default_sender, extra_attrs={'help_text': 'Domyślny adres email nadawcy.'}) }}
+                </div>
+            </div>
+            <div class="form-check mb-2">
+                {{ form.mail_use_tls(class="form-check-input") }}
+                {{ form.mail_use_tls.label(class="form-check-label") }}
+            </div>
+             <div class="form-check mb-3">
+                {{ form.mail_use_ssl(class="form-check-input") }}
+                {{ form.mail_use_ssl.label(class="form-check-label") }}
+            </div>
+            {{ render_form_field(form.mail_username, extra_attrs={'help_text': 'Nazwa użytkownika serwera SMTP (często pełny adres email).'}) }}
+            {{ render_form_field(form.mail_password, extra_attrs={'type': 'password', 'help_text': 'Hasło do serwera SMTP. Pozostaw puste, aby nie zmieniać.'}) }}
+            #}
+
+            <div class="mt-4">
+                {{ render_submit_button("Zapisz ustawienia", icon_class="bi-check-lg") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

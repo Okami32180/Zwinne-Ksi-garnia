@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "partials/_macros.html" import render_form_field, render_submit_button %}
+
+{% block title %}Rejestracja - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">Rejestracja</h2>
+                <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+                    {{ form.hidden_tag() }} {# Includes CSRF token #}
+                    
+                    {{ render_form_field(form.login, extra_attrs={'placeholder': 'Twój unikalny login'}) }}
+                    {{ render_form_field(form.email, extra_attrs={'placeholder': 'np. jan.kowalski@example.com'}) }}
+                    {{ render_form_field(form.password, extra_attrs={'placeholder': 'Minimum 8 znaków'}) }}
+                    {{ render_form_field(form.password2, extra_attrs={'placeholder': 'Powtórz hasło'}) }}
+
+                    <div class="d-grid mt-4">
+                        {{ render_submit_button("Zarejestruj się", icon_class="bi-person-plus-fill") }}
+                    </div>
+                </form>
+                <hr class="my-4">
+                <div class="text-center">
+                    <p class="mb-0">
+                        Masz już konto? <a href="{{ url_for('auth.login') }}">Zaloguj się</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

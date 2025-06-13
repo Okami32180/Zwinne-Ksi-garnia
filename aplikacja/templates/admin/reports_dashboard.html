@@ -1,0 +1,41 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Raporty{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Raporty</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-cash-coin"></i> Raport Sprzedaży</h5>
+                <p class="card-text">Podsumowanie sprzedaży, całkowity dochód, liczba zamówień.</p>
+                <a href="{{ url_for('admin.sales_report') }}" class="btn btn-primary btn-sm">Zobacz raport</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-book-fill"></i> Popularne Książki</h5>
+                <p class="card-text">Ranking książek według liczby sprzedanych egzemplarzy.</p>
+                <a href="{{ url_for('admin.popular_books_report') }}" class="btn btn-primary btn-sm">Zobacz raport</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-people-fill"></i> Aktywność Użytkowników</h5>
+                <p class="card-text">Podstawowe statystyki dotyczące użytkowników.</p>
+                <a href="{{ url_for('admin.user_activity_report') }}" class="btn btn-primary btn-sm">Zobacz raport</a>
+            </div>
+        </div>
+    </div>
+    {# Add more report cards here as they are developed #}
+</div>
+
+{% endblock %}

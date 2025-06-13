@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Mój Profil - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'profile/partials/_profile_nav.html' %}
+        </div>
+        <div class="col-md-9">
+            <h1 class="mb-4">Witaj, {{ current_user.login }}!</h1>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-receipt-cutoff display-3 text-primary mb-3"></i>
+                            <h5 class="card-title">Twoje Zamówienia</h5>
+                            <p class="card-text">Masz <strong>{{ order_count }}</strong> złożonych zamówień.</p>
+                            <a href="{{ url_for('orders.order_history') }}" class="btn btn-primary">Zobacz historię</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-collection-fill display-3 text-success mb-3"></i>
+                            <h5 class="card-title">Twoje Ebooki</h5>
+                            <p class="card-text">Posiadasz dostęp do <strong>{{ purchased_ebooks_count }}</strong> ebooków.</p>
+                            <a href="{{ url_for('profile.my_ebooks') }}" class="btn btn-success">Przeglądaj bibliotekę</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-2">
+                <div class="card-header">
+                    <h4 class="mb-0">Informacje o Koncie</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Login:</dt>
+                        <dd class="col-sm-9">{{ current_user.login }}</dd>
+
+                        <dt class="col-sm-3">Email:</dt>
+                        <dd class="col-sm-9">{{ current_user.email }}</dd>
+
+                        <dt class="col-sm-3">Imię:</dt>
+                        <dd class="col-sm-9">{{ current_user.imie or 'Nie podano' }}</dd>
+
+                        <dt class="col-sm-3">Nazwisko:</dt>
+                        <dd class="col-sm-9">{{ current_user.nazwisko or 'Nie podano' }}</dd>
+                        
+                        <dt class="col-sm-3">Numer telefonu:</dt>
+                        <dd class="col-sm-9">{{ current_user.numer_telefonu or 'Nie podano' }}</dd>
+
+                        <dt class="col-sm-3">Rola:</dt>
+                        <dd class="col-sm-9">{{ current_user.rola|capitalize }}</dd>
+
+                        <dt class="col-sm-3">Data rejestracji:</dt>
+                        <dd class="col-sm-9">{{ current_user.data_rejestracji.strftime('%d-%m-%Y %H:%M') }}</dd>
+                        
+                        {% if current_user.ostatnie_logowanie %}
+                        <dt class="col-sm-3">Ostatnie logowanie:</dt>
+                        <dd class="col-sm-9">{{ current_user.ostatnie_logowanie.strftime('%d-%m-%Y %H:%M') }}</dd>
+                        {% endif %}
+                    </dl>
+                    <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil-square"></i> Edytuj dane profilowe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

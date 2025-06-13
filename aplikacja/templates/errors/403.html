@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Błąd 403 - Brak Dostępu - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="display-1 fw-bold text-danger">403</h1>
+            <h2 class="mb-4">Brak Dostępu</h2>
+            <p class="lead">
+                Przepraszamy, ale nie masz uprawnień do wyświetlenia tej strony. 
+                Być może próbujesz uzyskać dostęp do zasobu, który wymaga specjalnych uprawnień.
+            </p>
+            <hr class="my-4">
+            <p>
+                Jeśli uważasz, że to błąd, skontaktuj się z administratorem strony.
+            </p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg mt-3">
+                <i class="bi bi-house-door-fill"></i> Wróć na stronę główną
+            </a>
+            {% if current_user.is_authenticated and current_user.rola == 'admin' %}
+                <p class="mt-3 small text-muted">
+                    Jako administrator, możesz sprawdzić logi serwera lub konfigurację uprawnień.
+                </p>
+            {% elif current_user.is_authenticated %}
+                 <a href="{{ url_for('profile.dashboard') }}" class="btn btn-outline-secondary btn-lg mt-3 ms-2">
+                    <i class="bi bi-person-circle"></i> Przejdź do Mojego Profilu
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-lg mt-3 ms-2">
+                    <i class="bi bi-box-arrow-in-right"></i> Zaloguj się
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

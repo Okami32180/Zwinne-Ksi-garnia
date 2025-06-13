@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% from "partials/_macros.html" import render_pagination %}
+
+{% block title %}Moje Ebooki - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'profile/partials/_profile_nav.html' %}
+        </div>
+        <div class="col-md-9">
+            <h1 class="mb-4">Moje Zakupione Ebooki</h1>
+
+            {% if dostepy_pagination and dostepy_pagination.items %}
+                <div class="list-group shadow-sm">
+                    {% for dostep in dostepy_pagination.items %}
+                    <div class="list-group-item mb-3 rounded">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center mb-3 mb-md-0">
+                                <a href="{{ url_for('books.book_details', book_id=dostep.ksiazka.id) }}">
+                                <img src="{{ dostep.ksiazka.okladka_url or url_for('static', filename='images/placeholder_cover_small.png') }}" 
+                                     alt="Okładka {{ dostep.ksiazka.tytul }}" class="img-fluid rounded" style="max-height: 120px; object-fit: cover;"
+                                     onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/placeholder_cover_small.png') }}'">
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-1">
+                                    <a href="{{ url_for('books.book_details', book_id=dostep.ksiazka.id) }}" class="text-decoration-none">
+                                        {{ dostep.ksiazka.tytul }}
+                                    </a>
+                                </h5>
+                                <p class="mb-1 small text-muted">Autor: {{ dostep.ksiazka.autor }}</p>
+                                <p class="mb-1 small text-muted">Format: {{ dostep.format_pliku or dostep.ksiazka.format_pliku }}</p>
+                                <p class="mb-0 small text-muted">Data zakupu: {{ dostep.zamowienie.data_zamowienia.strftime('%d-%m-%Y') }} (Zam. #{{ dostep.id_zamowienia }})</p>
+                            </div>
+                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                {% if dostep.token_pobierania and (not dostep.data_waznosci_tokenu or dostep.data_waznosci_tokenu > ("now"|date(None))) and (dostep.limit_pobran is none or dostep.liczba_pobran < dostep.limit_pobran) %}
+                                    <a href="{{ url_for('profile.download_ebook', dostep_id=dostep.id, token=dostep.token_pobierania) }}" class="btn btn-success mb-2 w-100">
+                                        <i class="bi bi-download"></i> Pobierz ({{ dostep.format_pliku or dostep.ksiazka.format_pliku }})
+                                    </a>
+                                {% elif dostep.limit_pobran is not none and dostep.liczba_pobran >= dostep.limit_pobran %}
+                                     <button class="btn btn-secondary mb-2 w-100" disabled title="Osiągnięto limit pobrań">
+                                        <i class="bi bi-slash-circle"></i> Limit pobrań
+                                    </button>
+                                {% endif %}
+                                
+                                {% if dostep.limit_pobran is none or dostep.liczba_pobran < dostep.limit_pobran %}
+                                <form action="{{ url_for('profile.generate_download_link', dostep_id=dostep.id) }}" method="POST" class="d-grid">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                        {% if dostep.token_pobierania and (not dostep.data_waznosci_tokenu or dostep.data_waznosci_tokenu > ("now"|date(None))) %}
+                                            Odśwież link
+                                        {% else %}
+                                            Generuj link do pobrania
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <p class="small text-muted mt-1">
+                                    {% if dostep.limit_pobran is not none %}
+                                        Pobrano: {{ dostep.liczba_pobran }}/{{ dostep.limit_pobran }} |
+                                    {% endif %}
+                                    {% if dostep.token_pobierania and dostep.data_waznosci_tokenu %}
+                                        Link ważny do: {{ dostep.data_waznosci_tokenu.strftime('%d-%m-%Y %H:%M') }}
+                                    {% elif dostep.token_pobierania %}
+                                        Link aktywny
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4">
+                    {{ render_pagination(dostepy_pagination, 'profile.my_ebooks') }}
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle-fill"></i> Nie zakupiłeś/aś jeszcze żadnych ebooków.
+                </div>
+                <p><a href="{{ url_for('main.index') }}" class="btn btn-primary"><i class="bi bi-shop"></i> Przeglądaj ofertę</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

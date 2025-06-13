@@ -1,0 +1,473 @@
+/* Global Styles & Variables */
+:root {
+    --font-primary: 'Montserrat', sans-serif;
+    --font-secondary: 'Open Sans', sans-serif;
+    --color-primary: #087f5b; /* Darker Teal */
+    --color-primary-darker: #077250;
+    --color-secondary: #f76707; /* Orange */
+    --color-secondary-darker: #e8590c;
+    --color-text: #212529; /* Bootstrap default body color */
+    --color-text-muted: #6c757d;
+    --color-background: #f8f9fa;
+    --color-surface: #ffffff; /* For cards, content backgrounds */
+    --color-border: #dee2e6; /* Bootstrap default border color */
+    --border-radius: 0.375rem; /* Bootstrap default */
+    --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --box-shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: var(--font-secondary); /* Open Sans for body text */
+    line-height: 1.7;
+    color: var(--color-text);
+    background-color: var(--color-background);
+    padding-top: 56px; /* Adjust if navbar height changes */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, .card-title {
+    font-family: var(--font-primary); /* Montserrat for headings */
+    font-weight: 500;
+}
+
+.content-wrapper {
+    flex: 1; /* Allows footer to stick to bottom */
+    background-color: var(--color-surface);
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: var(--color-primary-darker);
+    text-decoration: none; /* Often preferred over underline for modern look */
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--color-primary); /* Use new primary color */
+    box-shadow: var(--box-shadow);
+}
+
+.navbar-brand {
+    font-weight: 700; /* Bolder brand */
+    font-size: 1.6rem;
+}
+
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: #ffffff;
+}
+
+.navbar .dropdown-menu {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-lg);
+    border: 1px solid var(--color-border);
+}
+.navbar .dropdown-item:active { /* Bootstrap 5 active state for dropdowns */
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+
+/* Buttons */
+.btn {
+    font-family: var(--font-primary);
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+.btn-primary:hover {
+    background-color: var(--color-primary-darker);
+    border-color: var(--color-primary-darker);
+    color: #fff;
+}
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--color-primary), 0.5); /* Adjust RGB if primary changes */
+}
+
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: #fff;
+}
+.btn-secondary:hover {
+    background-color: var(--color-secondary-darker);
+    border-color: var(--color-secondary-darker);
+    color: #fff;
+}
+.btn-secondary:focus {
+     box-shadow: 0 0 0 0.25rem rgba(var(--color-secondary), 0.5); /* Adjust RGB */
+}
+
+.btn-outline-primary {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+.btn-outline-primary:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+.btn-outline-secondary {
+    color: var(--color-text-muted);
+    border-color: var(--color-text-muted);
+}
+.btn-outline-secondary:hover {
+    background-color: var(--color-text-muted);
+    color: #fff;
+}
+
+
+/* Cards - Modern Makeover */
+.card.book-card {
+    background-color: var(--color-surface);
+    border: none; /* Remove default border */
+    border-radius: 12px; /* Softer, more modern radius */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* Softer, more diffused shadow */
+    transition: all 0.3s ease-in-out;
+    overflow: hidden; /* Important for child elements like cover */
+    display: flex;
+    flex-direction: column;
+    width: 280px; /* Set a fixed width */
+    margin-left: auto; /* Center if column is wider */
+    margin-right: auto; /* Center if column is wider */
+}
+
+.card.book-card:hover {
+    transform: translateY(-8px) scale(1.02); /* More pronounced hover effect */
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.book-cover-container {
+    position: relative;
+    width: 100%;
+    height: 300px; /* Increased fixed height for the cover area */
+    overflow: hidden;
+    background: var(--color-background); /* Fallback background */
+    /* border-top-left-radius and border-top-right-radius removed as card has overflow:hidden */
+}
+
+.book-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother zoom */
+}
+
+.card.book-card:hover .book-cover {
+    transform: scale(1.1); /* Slightly larger zoom on hover */
+}
+
+.placeholder-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column; /* Allow title and author stacking */
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-darker) 100%);
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    font-family: var(--font-primary);
+}
+.placeholder-cover .title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+.placeholder-cover .author {
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+
+.card.book-card .card-body {
+    padding: 1rem; /* Consistent padding */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Make card body take remaining space */
+}
+
+.card.book-card .card-title {
+    font-size: 1.1rem; /* Slightly larger title */
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--color-text);
+    /* Removed text-truncate, will handle with line-clamp if needed */
+}
+.card.book-card .card-title a {
+    color: inherit; /* Inherit color from card-title */
+    text-decoration: none;
+}
+.card.book-card .card-title a:hover {
+    color: var(--color-primary);
+}
+
+
+.card.book-card .card-subtitle { /* Author */
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+    font-family: var(--font-secondary);
+}
+
+.card.book-card .price-rating-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.card.book-card .book-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    font-family: var(--font-primary);
+}
+
+.card.book-card .rating-display .badge { /* For stars */
+    font-size: 0.8rem;
+    padding: 0.3em 0.5em;
+}
+
+
+.card.book-card .book-tags {
+    margin-bottom: 1rem;
+    /* flex-grow: 1; */ /* REMOVE THIS - card-body handles the growth */
+}
+.card.book-card .book-tags .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+    padding: 0.3em 0.6em;
+}
+.badge.bg-secondary { /* Customizing default secondary badge */
+    background-color: #e9ecef !important; /* Lighter grey */
+    color: #495057 !important; /* Darker text for contrast */
+}
+.badge.bg-info { /* Customizing default info badge */
+    background-color: #cfe2ff !important; /* Lighter blue */
+    color: #052c65 !important; /* Darker blue text */
+}
+
+
+.card.book-card .card-footer {
+    background-color: transparent; /* Remove default footer bg */
+    border-top: 1px solid var(--color-border);
+    padding: 0.75rem 1rem;
+    display: flex; /* For multiple buttons if needed */
+    gap: 0.5rem;
+    margin-top: auto; /* Push footer to the bottom of the flex column (the card) */
+}
+
+.card.book-card .btn-add-to-cart {
+    flex-grow: 1; /* Make button take full width if it's the only one */
+}
+
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--color-primary), 0.25); /* Adjust RGB */
+}
+
+/* Alerts */
+.alert {
+    border-radius: var(--border-radius);
+}
+
+/* Footer */
+.footer {
+    background-color: #212529; /* Darker footer */
+    color: rgba(255, 255, 255, 0.7);
+    padding: 2.5rem 0;
+    margin-top: auto; /* Pushes footer to the bottom */
+    font-family: var(--font-secondary);
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* Utility classes */
+.text-truncate-2 { /* For truncating text to 2 lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Specific component styling */
+.filter-sidebar {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.rating-stars .bi-star-fill, .rating-stars .bi-star-half {
+    color: var(--color-secondary); /* Use accent orange for stars */
+}
+.rating-stars .bi-star {
+    color: var(--color-border);
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: var(--color-primary);
+    border-radius: var(--border-radius); /* Rounded page links */
+    margin: 0 0.25rem;
+    border: 1px solid var(--color-border);
+}
+.pagination .page-link:hover {
+    background-color: #e9ecef; /* Light hover for non-active */
+}
+.pagination .page-item.active .page-link {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+.pagination .page-item.disabled .page-link {
+    color: var(--color-text-muted);
+    background-color: transparent;
+    border-color: var(--color-border);
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+    background-color: var(--color-surface);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+}
+.breadcrumb-item a {
+    text-decoration: none;
+    color: var(--color-primary);
+}
+.breadcrumb-item a:hover {
+    color: var(--color-primary-darker);
+}
+.breadcrumb-item.active {
+    color: var(--color-text-muted);
+}
+
+/* Admin specific styles (can be in a separate admin.css) */
+/* These styles are from the original style.css, might need review if admin_base.html has its own styles */
+.admin-sidebar {
+    background-color: #f8f9fa; /* This was in original style.css, admin_base.html has #343a40 */
+    border-right: 1px solid #dee2e6;
+    min-height: calc(100vh - 56px);
+}
+.admin-sidebar .nav-link {
+    color: #333; /* Original style.css */
+}
+.admin-sidebar .nav-link.active, .admin-sidebar .nav-link:hover {
+    color: var(--color-primary); /* Use new primary */
+    background-color: #e9ecef; /* Original style.css */
+}
+
+/* Profile specific styles */
+.profile-nav .list-group-item.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+/* Hero Section Styles */
+.hero-section {
+    background: linear-gradient(rgba(var(--color-primary-rgb, 8, 127, 91), 0.75), rgba(var(--color-primary-darker-rgb, 7, 114, 80), 0.85)), url("https://images.unsplash.com/photo-1457369804613-52c61a468e7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"); /* Example background image */
+    /* You'll need to define --color-primary-rgb and --color-primary-darker-rgb in :root if you use rgba() with CSS variables directly like this, or use hex with opacity */
+    /* Simpler approach with hex and opacity (if supported, otherwise use solid or a pre-calculated rgba): */
+    /* background: linear-gradient(to right, #087f5b90, #077250b0), url("https://images.unsplash.com/photo-1457369804613-52c61a468e7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"); */
+    /* Safest for broad compatibility if not using JS to set RGB vars: */
+    background: linear-gradient(rgba(8, 127, 91, 0.75), rgba(7, 114, 80, 0.85)), url("https://images.unsplash.com/photo-1532012197267-da84d127e765?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ym9va3N8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=900&q=60"); /* New, more relevant placeholder image */
+    background-size: cover;
+    background-position: center center;
+    /* background-blend-mode: multiply; /* Multiply can make it too dark, consider overlay or just opacity in gradient */
+    color: #fff;
+    padding: 5rem 0; /* More padding */
+    margin-bottom: 2rem; /* Space below hero */
+}
+
+.hero-section h1 {
+    font-size: 3.5rem; /* Larger heading */
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+
+.hero-section .lead {
+    font-size: 1.35rem;
+    font-weight: 400;
+    margin-bottom: 2.5rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-form-hero .form-control-lg {
+    border-radius: var(--border-radius); 
+    border: none;
+    padding: 0.85rem 1.25rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.search-form-hero .btn-lg {
+    border-radius: var(--border-radius);
+    padding: 0.85rem 1.25rem;
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: #fff;
+    font-weight: 500;
+}
+.search-form-hero .btn-lg:hover {
+    background-color: var(--color-secondary-darker);
+    border-color: var(--color-secondary-darker);
+}
+
+/* Adjust main content padding if hero is full-width and navbar is fixed */
+/* body { padding-top: 0; } /* If navbar is part of hero or transparent initially */
+/* .content-wrapper.with-hero { padding-top: 0; } */ /* If hero is truly full bleed */
+
+/* Ensure main container after hero has some top margin if hero has mb */
+.container.mt-4 { /* This is the class used in index.html for book list */
+    /* margin-top: 2rem !important; /* If hero section has mb-4, this might not be needed or adjust */
+}

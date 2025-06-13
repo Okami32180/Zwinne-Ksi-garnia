@@ -1,0 +1,115 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Dashboard{% endblock %}
+
+{% block admin_content %}
+<h1 class="mb-4">Panel Administracyjny</h1>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 dashboard-stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Użytkownicy</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800 stat-value">{{ user_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-people-fill display-4 text-gray-300 stat-icon"></i>
+                    </div>
+                </div>
+                 <a href="{{ url_for('admin.list_users') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2 dashboard-stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Książki w Ofercie</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800 stat-value">{{ book_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-book-fill display-4 text-gray-300 stat-icon"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin.list_books') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 dashboard-stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Złożone Zamówienia</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800 stat-value">{{ order_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-receipt-cutoff display-4 text-gray-300 stat-icon"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin.list_orders') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2 dashboard-stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Recenzje (do moderacji)</div>
+                        {# Placeholder - you'd need to pass this count from the route #}
+                        <div class="h5 mb-0 font-weight-bold text-gray-800 stat-value">{{ pending_reviews_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-chat-square-text-fill display-4 text-gray-300 stat-icon"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin.list_reviews') }}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Szybkie Akcje</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('admin.add_book') }}" class="btn btn-primary mb-2 d-block">
+                    <i class="bi bi-plus-circle-fill"></i> Dodaj nową książkę
+                </a>
+                <a href="{{ url_for('admin.add_category') }}" class="btn btn-info mb-2 d-block">
+                    <i class="bi bi-tag-fill"></i> Dodaj nową kategorię
+                </a>
+                {# Add more quick actions as needed #}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Ostatnie Aktywności (Placeholder)</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Nowy użytkownik: JanKowalski (dziś)</li>
+                <li class="list-group-item">Nowe zamówienie #1025 (dziś)</li>
+                <li class="list-group-item">Dodano książkę: "Flask dla Zaawansowanych" (wczoraj)</li>
+                <li class="list-group-item">Zatwierdzono recenzję dla "Python od Podstaw" (wczoraj)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_title %}Szczegóły Zamówienia #{{ order.id }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Zamówienie #{{ order.id }}</h1>
+    <a href="{{ url_for('admin.list_orders') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Wróć do listy zamówień
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-4"><strong>Data:</strong> {{ order.data_zamowienia.strftime('%Y-%m-%d %H:%M') }}</div>
+            <div class="col-md-4">
+                <strong>Klient:</strong> 
+                {% if order.uzytkownik %}
+                    <a href="{{ url_for('admin.edit_user', user_id=order.uzytkownik.id) }}">{{ order.uzytkownik.login }}</a> ({{ order.uzytkownik.email }})
+                {% else %}
+                    Brak (użytkownik usunięty)
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-md-end">
+                <strong>Status:</strong> 
+                <span class="fw-medium
+                    {% if order.status == 'zrealizowane' %}text-success
+                    {% elif order.status in ['anulowane_przez_uzytkownika', 'blad_platnosci', 'anulowane'] %}text-danger
+                    {% elif order.status == 'oczekujace_na_platnosc' %}text-warning
+                    {% elif order.status == 'w_realizacji' %}text-info
+                    {% else %}text-secondary
+                    {% endif %}">
+                    {{ order.status.replace('_', ' ')|capitalize }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-7">
+                <h5 class="card-title">Zamówione produkty</h5>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Produkt (ID)</th>
+                                <th class="text-center">Ilość</th>
+                                <th class="text-end">Cena jedn. (zakup)</th>
+                                <th class="text-end">Suma częściowa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.elementy_zamowienia %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('admin.edit_book', book_id=item.ksiazka.id) }}">{{ item.ksiazka.tytul }}</a> ({{item.id_ksiazki}})<br>
+                                    <small class="text-muted">{{ item.ksiazka.autor }}</small>
+                                </td>
+                                <td class="text-center">{{ item.ilosc }}</td>
+                                <td class="text-end">{{ "%.2f zł"|format(item.cena_jednostkowa_w_momencie_zakupu|float) }}</td>
+                                <td class="text-end fw-medium">{{ "%.2f zł"|format(item.ilosc * item.cena_jednostkowa_w_momencie_zakupu|float) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold fs-5 table-light">
+                                <td colspan="3" class="text-end">Suma całkowita:</td>
+                                <td class="text-end">{{ "%.2f zł"|format(order.suma_calkowita|float) }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-5">
+                {% if order.adres_rozliczeniowy %}
+                <h5>Adres rozliczeniowy</h5>
+                <address class="small bg-light p-2 rounded border">
+                    <strong>{{ order.adres_rozliczeniowy.imie }} {{ order.adres_rozliczeniowy.nazwisko }}</strong><br>
+                    {{ order.adres_rozliczeniowy.linia_adresu1 }}<br>
+                    {% if order.adres_rozliczeniowy.linia_adresu2 %}{{ order.adres_rozliczeniowy.linia_adresu2 }}<br>{% endif %}
+                    {{ order.adres_rozliczeniowy.kod_pocztowy }} {{ order.adres_rozliczeniowy.miasto }}<br>
+                    {{ order.adres_rozliczeniowy.kraj }}<br>
+                    {% if order.adres_rozliczeniowy.numer_telefonu %}Telefon: {{ order.adres_rozliczeniowy.numer_telefonu }}{% endif %}
+                </address>
+                {% else %}
+                <p class="text-muted">Brak adresu rozliczeniowego dla tego zamówienia.</p>
+                {% endif %}
+
+                <h5 class="mt-3">Informacje o płatności</h5>
+                <p class="small bg-light p-2 rounded border">
+                    <strong>Metoda płatności:</strong> {{ order.metoda_platnosci or 'Nie określono' }}<br>
+                    {% if order.id_platnosci_gateway %}
+                    <strong>ID transakcji (Gateway):</strong> {{ order.id_platnosci_gateway }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        <h5>Zmień status zamówienia</h5>
+        <form action="{{ url_for('admin.update_order_status', order_id=order.id) }}" method="POST" class="row g-3 align-items-center">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-auto">
+                <label for="status" class="visually-hidden">Status</label>
+                <select name="status" id="status" class="form-select form-select-sm">
+                    {# Populate with relevant statuses #}
+                    <option value="oczekujace_na_platnosc" {% if order.status == 'oczekujace_na_platnosc' %}selected{% endif %}>Oczekuje na płatność</option>
+                    <option value="w_realizacji" {% if order.status == 'w_realizacji' %}selected{% endif %}>W realizacji</option>
+                    <option value="zrealizowane" {% if order.status == 'zrealizowane' %}selected{% endif %}>Zrealizowane</option>
+                    <option value="anulowane" {% if order.status == 'anulowane' %}selected{% endif %}>Anulowane</option>
+                    <option value="blad_platnosci" {% if order.status == 'blad_platnosci' %}selected{% endif %}>Błąd płatności</option>
+                    <option value="anulowane_przez_uzytkownika" {% if order.status == 'anulowane_przez_uzytkownika' %}selected{% endif %}>Anul. przez użytkownika</option>
+                    {# Add other statuses as defined in your system #}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm">Aktualizuj Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

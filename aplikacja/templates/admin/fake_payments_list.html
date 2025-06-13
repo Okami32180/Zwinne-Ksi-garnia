@@ -1,0 +1,69 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_pagination %}
+
+{% block admin_title %}Logi Płatności (Fake System){% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Logi Płatności (System Symulowany)</h1>
+    {# Optional: Add filters for payment logs (e.g., by user ID, order ID, status, date range) #}
+</div>
+
+{% if payment_logs_pagination and payment_logs_pagination.items %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>ID Transakcji</th>
+                        <th>ID Zamówienia</th>
+                        <th>ID Użytkownika</th>
+                        <th class="text-end">Kwota</th>
+                        <th>Waluta</th>
+                        <th class="text-center">Status</th>
+                        <th>Metoda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in payment_logs_pagination.items %}
+                    <tr>
+                        <td>{{ log.Timestamp }}</td>
+                        <td>{{ log.TransactionID }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.view_order', order_id=log.OrderID|int) }}">#{{ log.OrderID }}</a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_user', user_id=log.UserID|int) }}">{{ log.UserID }}</a>
+                        </td>
+                        <td class="text-end">{{ log.Amount }}</td>
+                        <td>{{ log.Currency }}</td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill 
+                                {% if log.Status == 'SUCCESS' %}bg-success
+                                {% elif log.Status == 'PENDING' %}bg-warning text-dark
+                                {% elif log.Status == 'FAILED' %}bg-danger
+                                {% else %}bg-secondary
+                                {% endif %}">
+                                {{ log.Status }}
+                            </span>
+                        </td>
+                        <td>{{ log.PaymentMethod }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ render_pagination(payment_logs_pagination, 'admin.list_payment_logs') }}
+</div>
+
+{% else %}
+<div class="alert alert-info">Brak logów płatności do wyświetlenia.</div>
+{% endif %}
+
+{% endblock %}

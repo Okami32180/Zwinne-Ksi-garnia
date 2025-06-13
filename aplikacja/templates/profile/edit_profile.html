@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "partials/_macros.html" import render_form_field, render_submit_button %}
+
+{% block title %}Edytuj Profil - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'profile/partials/_profile_nav.html' %}
+        </div>
+        <div class="col-md-9">
+            <h1 class="mb-4">Edytuj Profil</h1>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('profile.edit_profile') }}" novalidate>
+                        {{ form.hidden_tag() }} {# Includes CSRF token #}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ render_form_field(form.login) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ render_form_field(form.email, extra_attrs={'type': 'email'}) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ render_form_field(form.imie) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ render_form_field(form.nazwisko) }}
+                            </div>
+                        </div>
+                        {{ render_form_field(form.numer_telefonu, extra_attrs={'type': 'tel', 'placeholder': 'np. +48 123 456 789'}) }}
+
+                        <div class="mt-4">
+                            {{ render_submit_button("Zapisz zmiany", icon_class="bi-check-lg") }}
+                            <a href="{{ url_for('profile.dashboard') }}" class="btn btn-outline-secondary ms-2">
+                                <i class="bi bi-x-lg"></i> Anuluj
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

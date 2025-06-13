@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% from "partials/_macros.html" import render_form_field %}
+
+{% block title %}Mój Koszyk - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Mój Koszyk</h1>
+
+    {% if cart_items %}
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 10%;">Okładka</th>
+                        <th scope="col" style="width: 35%;">Tytuł</th>
+                        <th scope="col" class="text-center" style="width: 10%;">Cena jedn.</th>
+                        <th scope="col" class="text-center" style="width: 15%;">Ilość</th>
+                        <th scope="col" class="text-center" style="width: 15%;">Suma częściowa</th>
+                        <th scope="col" class="text-center" style="width: 15%;">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('books.book_details', book_id=item.ksiazka.id) }}">
+                                <img src="{{ item.ksiazka.okladka_url or url_for('static', filename='images/placeholder_cover_small.png') }}" 
+                                     alt="{{ item.ksiazka.tytul }}" class="img-fluid rounded" style="max-height: 75px; object-fit: cover;"
+                                     onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/placeholder_cover_small.png') }}'">
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('books.book_details', book_id=item.ksiazka.id) }}" class="text-decoration-none fw-medium">{{ item.ksiazka.tytul }}</a><br>
+                            <small class="text-muted">{{ item.ksiazka.autor }}</small>
+                        </td>
+                        <td class="text-center">{{ "%.2f zł"|format(item.ksiazka.cena|float) }}</td>
+                        <td class="text-center">
+                            <form action="{{ url_for('cart.update_cart_item', item_id=item.id) }}" method="POST" class="d-inline-flex align-items-center">
+                                {{ update_form.csrf_token }} {# Explicitly render CSRF token from the form instance #}
+                                <input type="hidden" name="id_elementu_koszyka" value="{{ item.id }}">
+                                <input type="number" name="ilosc" value="{{ item.ilosc }}" min="1" max="99" class="form-control form-control-sm" style="width: 70px;">
+                                <button type="submit" name="submit_update" class="btn btn-outline-primary btn-sm ms-1" title="Aktualizuj ilość">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td class="text-center fw-medium">{{ "%.2f zł"|format(item.ilosc * item.ksiazka.cena|float) }}</td>
+                        <td class="text-center">
+                            <form action="{{ url_for('cart.remove_cart_item', item_id=item.id) }}" method="POST" class="d-inline">
+                                {{ remove_form.hidden_tag() }} {# Includes CSRF token for this form #}
+                                <input type="hidden" name="id_elementu_koszyka" value="{{ item.id }}">
+                                <button type="submit" name="submit_remove" class="btn btn-outline-danger btn-sm" title="Usuń z koszyka">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <td colspan="4" class="text-end fw-bold fs-5">Suma całkowita:</td>
+                        <td colspan="2" class="text-center fw-bold fs-5">{{ "%.2f zł"|format(total_price|float) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6 mb-3">
+                {# Promo Code Form - if you implement it #}
+                {# 
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Kod promocyjny</h5>
+                        <form action="{{ url_for('cart.apply_promo_code') }}" method="POST">
+                            {{ promo_form.hidden_tag() }}
+                            <div class="input-group">
+                                {{ promo_form.kod_promocyjny(class="form-control", placeholder="Wpisz kod") }}
+                                {{ promo_form.submit_promo(class="btn btn-secondary") }}
+                            </div>
+                            {% if promo_form.kod_promocyjny.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in promo_form.kod_promocyjny.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                #}
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left-circle"></i> Kontynuuj zakupy
+                </a>
+                <a href="{{ url_for('orders.checkout') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-shield-check"></i> Przejdź do kasy
+                </a>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col text-end">
+                 <form action="{{ url_for('cart.clear_cart') }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Czy na pewno chcesz opróżnić cały koszyk?');">
+                        <i class="bi bi-cart-x-fill"></i> Opróżnij koszyk
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            <h4 class="alert-heading"><i class="bi bi-emoji-frown"></i> Twój koszyk jest pusty!</h4>
+            <p>Wygląda na to, że nie dodałeś/aś jeszcze żadnych ebooków do swojego koszyka.</p>
+            <hr>
+            <p class="mb-0">
+                <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                    <i class="bi bi-book-half"></i> Przeglądaj naszą ofertę
+                </a>
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

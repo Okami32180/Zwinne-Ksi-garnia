@@ -1,0 +1,33 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_form_field, render_submit_button %}
+
+{% block admin_title %}{% if gatunek %}Edytuj Gatunek: {{ gatunek.nazwa }}{% else %}Dodaj Nowy Gatunek{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">{% if gatunek %}Edytuj Gatunek: <span class="text-primary">{{ gatunek.nazwa }}</span>{% else %}Dodaj Nowy Gatunek{% endif %}</h1>
+    <a href="{{ url_for('admin.list_genres') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Wróć do listy gatunków
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="POST" 
+              action="{{ url_for('admin.edit_genre', genre_id=gatunek.id) if gatunek else url_for('admin.add_genre') }}" 
+              novalidate>
+            {{ form.hidden_tag() }} {# Includes CSRF token #}
+            
+            {{ render_form_field(form.nazwa, extra_attrs={'placeholder': 'Unikalna nazwa gatunku'}) }}
+
+            <div class="mt-4">
+                {{ render_submit_button("Zapisz gatunek", icon_class="bi-check-lg") }}
+                <a href="{{ url_for('admin.list_genres') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-x-lg"></i> Anuluj
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

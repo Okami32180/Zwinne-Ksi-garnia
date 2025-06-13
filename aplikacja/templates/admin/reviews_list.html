@@ -1,0 +1,91 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_pagination %}
+
+{% block admin_title %}Zarządzanie Recenzjami{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Recenzje</h1>
+    {# Optional: Filters for reviews (e.g., by book, user, status) #}
+</div>
+
+{% if reviews_pagination and reviews_pagination.items %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 20%;">Książka</th>
+                        <th style="width: 15%;">Użytkownik</th>
+                        <th style="width: 5%;" class="text-center">Ocena</th>
+                        <th style="width: 25%;">Komentarz</th>
+                        <th style="width: 10%;">Data Dodania</th>
+                        <th style="width: 10%;" class="text-center">Status</th>
+                        <th style="width: 10%;" class="text-end">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews_pagination.items %}
+                    <tr class="{% if not review.zatwierdzona %}table-warning{% endif %}">
+                        <td>{{ review.id }}</td>
+                        <td>
+                            {% if review.ksiazka %}
+                                <a href="{{ url_for('admin.edit_book', book_id=review.ksiazka.id) }}">{{ review.ksiazka.tytul|truncate(40) }}</a>
+                            {% else %}
+                                <span class="text-muted">Książka usunięta</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if review.uzytkownik %}
+                                <a href="{{ url_for('admin.edit_user', user_id=review.uzytkownik.id) }}">{{ review.uzytkownik.login }}</a>
+                            {% else %}
+                                <span class="text-muted">Użytkownik usunięty</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-warning text-dark">{{ review.ocena }}/5</span>
+                        </td>
+                        <td>{{ review.komentarz|truncate(60) }}</td>
+                        <td>{{ review.data_dodania.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="text-center">
+                            {% if review.zatwierdzona %}
+                                <span class="badge bg-success">Zatwierdzona</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Oczekująca</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if not review.zatwierdzona %}
+                            <form action="{{ url_for('admin.approve_review', review_id=review.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-success me-1" title="Zatwierdź">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            <form action="{{ url_for('admin.delete_review', review_id=review.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć tę recenzję?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ render_pagination(reviews_pagination, 'admin.list_reviews') }}
+</div>
+
+{% else %}
+<div class="alert alert-info">Brak recenzji do wyświetlenia.</div>
+{% endif %}
+
+{% endblock %}

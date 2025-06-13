@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Przetwarzanie Płatności - Księgarnia Ebooków{% endblock %}
+
+{% block head_extra %}
+<style>
+    .payment-simulation-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 20px;
+    }
+    #paymentSuccessMessage, #paymentFailureMessage {
+        display: none; /* Hidden by default */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-simulation-container">
+    <h2 class="mb-4">Symulacja Płatności</h2>
+    
+    <div id="orderDetails">
+        <p>Zamówienie: <strong>#{{ zamowienie.id }}</strong></p>
+        <p>Kwota do zapłaty: <strong class="text-primary fs-4">{{ "%.2f zł"|format(zamowienie.suma_calkowita|float) }}</strong></p>
+        <p class="text-muted small">Metoda: Symulowany System Płatności</p>
+    </div>
+    <hr class="my-4">
+
+    <div id="paymentProcessing">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Ładowanie...</span>
+        </div>
+        <p class="lead">Przetwarzanie płatności, proszę czekać...</p>
+        <p class="text-muted small">To tylko symulacja, żadne prawdziwe środki nie zostaną pobrane.</p>
+    </div>
+
+    <div id="paymentResult" style="display: none;">
+        {# Messages will be shown here by JavaScript or on redirect #}
+    </div>
+
+    <form id="fakePaymentForm" method="POST" action="{{ url_for('orders.process_fake_payment_page') }}">
+        {{ form.csrf_token }} {# Use the form's CSRF token field #}
+        {# No actual form fields needed from user here, just a submit button #}
+        <button type="submit" id="confirmPaymentButton" class="btn btn-success btn-lg mt-4 w-100">
+            <i class="bi bi-shield-check-fill"></i> Potwierdź i Zapłać (Symulacja)
+        </button>
+    </form>
+    <a href="{{ url_for('orders.order_payment_cancel', order_id=zamowienie.id) }}" class="btn btn-outline-danger mt-2 w-100">
+        <i class="bi bi-x-circle"></i> Anuluj Płatność i Zamówienie
+    </a>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('fakePaymentForm');
+    const confirmButton = document.getElementById('confirmPaymentButton');
+    const processingDiv = document.getElementById('paymentProcessing');
+    const orderDetailsDiv = document.getElementById('orderDetails');
+    const paymentResultDiv = document.getElementById('paymentResult');
+
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            // Show processing spinner, hide button and order details
+            if (confirmButton) confirmButton.disabled = true;
+            if (confirmButton) confirmButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Przetwarzanie...';
+            
+            // No need to hide orderDetailsDiv, it's good context
+            // if (orderDetailsDiv) orderDetailsDiv.style.display = 'none';
+            if (processingDiv) processingDiv.style.display = 'block'; // Ensure it's visible
+            
+            // The actual "delay" and result will be handled by the server-side redirect
+            // after this form submits. This client-side change is mostly for UX during the brief moment
+            // before the POST request is sent and the server responds.
+        });
+    }
+});
+</script>
+{% endblock %}

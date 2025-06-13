@@ -1,0 +1,33 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_form_field, render_submit_button %}
+
+{% block admin_title %}{% if wydawnictwo %}Edytuj Wydawnictwo: {{ wydawnictwo.nazwa }}{% else %}Dodaj Nowe Wydawnictwo{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">{% if wydawnictwo %}Edytuj Wydawnictwo: <span class="text-primary">{{ wydawnictwo.nazwa }}</span>{% else %}Dodaj Nowe Wydawnictwo{% endif %}</h1>
+    <a href="{{ url_for('admin.list_publishers') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Wróć do listy wydawnictw
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="POST" 
+              action="{{ url_for('admin.edit_publisher', publisher_id=wydawnictwo.id) if wydawnictwo else url_for('admin.add_publisher') }}" 
+              novalidate>
+            {{ form.hidden_tag() }} {# Includes CSRF token #}
+            
+            {{ render_form_field(form.nazwa, extra_attrs={'placeholder': 'Unikalna nazwa wydawnictwa'}) }}
+
+            <div class="mt-4">
+                {{ render_submit_button("Zapisz wydawnictwo", icon_class="bi-check-lg") }}
+                <a href="{{ url_for('admin.list_publishers') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-x-lg"></i> Anuluj
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

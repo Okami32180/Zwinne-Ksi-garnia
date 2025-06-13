@@ -1,0 +1,35 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_form_field, render_submit_button %}
+
+{% block admin_title %}{% if kategoria %}Edytuj Kategorię: {{ kategoria.nazwa }}{% else %}Dodaj Nową Kategorię{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">{% if kategoria %}Edytuj Kategorię: <span class="text-primary">{{ kategoria.nazwa }}</span>{% else %}Dodaj Nową Kategorię{% endif %}</h1>
+    <a href="{{ url_for('admin.list_categories') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Wróć do listy kategorii
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="POST" 
+              action="{{ url_for('admin.edit_category', category_id=kategoria.id) if kategoria else url_for('admin.add_category') }}" 
+              novalidate>
+            {{ form.hidden_tag() }} {# Includes CSRF token #}
+            
+            {{ render_form_field(form.nazwa, extra_attrs={'placeholder': 'Unikalna nazwa kategorii'}) }}
+            {{ render_form_field(form.opis, extra_attrs={'rows': '3', 'placeholder': 'Krótki opis kategorii (opcjonalnie)'}) }}
+            {{ render_form_field(form.nadkategoria_id, extra_attrs={'help_text': 'Wybierz kategorię nadrzędną, jeśli ta jest podkategorią.'}) }}
+
+            <div class="mt-4">
+                {{ render_submit_button("Zapisz kategorię", icon_class="bi-check-lg") }}
+                <a href="{{ url_for('admin.list_categories') }}" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-x-lg"></i> Anuluj
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

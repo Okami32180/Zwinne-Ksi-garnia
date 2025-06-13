@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not query %}
+<div class="mb-4">
+    <h2 class="text-center mb-4">
+        {% if is_library %}
+            Moja biblioteka
+        {% else %}
+            Sklep książek
+        {% endif %}
+    </h2>
+</div>
+{% endif %}
+
+<div class="search-form">
+    <form action="{{ url_for('index') }}" method="GET" class="mb-3">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" 
+                       placeholder="Wyszukaj książkę..." 
+                       value="{{ query }}">
+            </div>
+            <div class="col-md-2">
+                <select name="sort" class="form-select">
+                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Tytuł A-Z</option>
+                    <option value="title_desc" {% if sort_by == 'title_desc' %}selected{% endif %}>Tytuł Z-A</option>
+                    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Cena rosnąco</option>
+                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Cena malejąco</option>
+                    <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Autor</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="genre" class="form-select">
+                    <option value="">Wszystkie gatunki</option>
+                    {% for genre in genres %}
+                    <option value="{{ genre }}" {% if genre_filter == genre %}selected{% endif %}>
+                        {{ genre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="min_price" class="form-control" 
+                       placeholder="Min cena" step="0.01"
+                       value="{{ min_price }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="max_price" class="form-control" 
+                       placeholder="Max cena" step="0.01"
+                       value="{{ max_price }}">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Szukaj
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Wyczyść filtry
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for book in books %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="book-cover-container">
+                <img src="{{ book.cover }}" 
+                     class="book-cover" 
+                     alt="{{ book.title }}"
+                     onerror="this.onerror=null; 
+                             this.src='https://covers.openlibrary.org/b/title/{{ book.title|urlencode }}-L.jpg?default=true';
+                             this.onerror=null;">
+            </div>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-truncate">{{ book.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ book.author }}</h6>
+                <p class="card-text flex-grow-1">
+                    {% if book.description %}
+                    {{ book.description[:150] }}...
+                    {% else %}
+                    Brak opisu
+                    {% endif %}
+                </p>
+                <div class="mt-auto">
+                    <p class="card-text">
+                        <small class="text-muted">
+                            {% if book.genre %}
+                            <span class="badge bg-secondary">{{ book.genre }}</span>
+                            {% endif %}
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">ISBN: {{ book.isbn if book.isbn else 'Brak' }}</small>
+                    </p>
+                    {% if book.in_library %}
+                        {% if not query and book.id %}
+                        <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" 
+                              onsubmit="return confirm('Czy na pewno chcesz usunąć tę książkę z biblioteki?');">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-trash"></i> Usuń z biblioteki
+                            </button>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            Już w bibliotece
+                        </button>
+                        {% endif %}
+                    {% else %}
+                    <form action="{{ url_for('save_book') }}" method="POST">
+                        <input type="hidden" name="title" value="{{ book.title }}">
+                        <input type="hidden" name="author" value="{{ book.author }}">
+                        <input type="hidden" name="isbn" value="{{ book.isbn }}">
+                        <input type="hidden" name="description" value="{{ book.description }}">
+                        <input type="hidden" name="cover" value="{{ book.cover }}">
+                        <input type="hidden" name="genre" value="{{ book.genre }}">
+                        <input type="hidden" name="price" value="{{ book.price }}">
+                        <input type="hidden" name="pageCount" value="{{ book.pageCount }}">
+                        <input type="hidden" name="publishedDate" value="{{ book.publishedDate }}">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-plus-circle"></i> Dodaj do biblioteki
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% macro render_pagination(pagination, endpoint, extra_params=None) %}
+    {% if pagination and pagination.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {# Previous Page Link #}
+            <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, **(extra_params or {})) if pagination.has_prev else '#' }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="visually-hidden">Poprzednia</span>
+                </a>
+            </li>
+
+            {# Page Numbers #}
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    {% if page_num == pagination.page %}
+                        <li class="page-item active" aria-current="page"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for(endpoint, page=page_num, **(extra_params or {})) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {# Next Page Link #}
+            <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, **(extra_params or {})) if pagination.has_next else '#' }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="visually-hidden">Następna</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_book_card(book) %}
+<div class="card h-100 book-card"> {# Removed shadow-sm, new CSS handles shadow #}
+    <div class="book-cover-container">
+        <a href="{{ url_for('books.book_details', book_id=book.id) }}">
+            {% if book.okladka_url %}
+                <img src="{{ book.okladka_url }}"
+                     class="book-cover"
+                     alt="Okładka {{ book.tytul }}"
+                     onerror="this.onerror=null; this.parentElement.innerHTML = '<div class=\'placeholder-cover\'><span class=\'title\'>{{ book.tytul|truncate(30, True) }}</span><span class=\'author\'>{{ book.autor|truncate(25, True) }}</span></div>';">
+            {% else %}
+                <div class="placeholder-cover">
+                    <span class="title">{{ book.tytul|truncate(30, True) }}</span>
+                    <span class="author">{{ book.autor|truncate(25, True) }}</span>
+                </div>
+            {% endif %}
+        </a>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="{{ url_for('books.book_details', book_id=book.id) }}" title="{{ book.tytul }}">{{ book.tytul|truncate(50, True) }}</a>
+        </h5>
+        <h6 class="card-subtitle">{{ book.autor|truncate(40, True) }}</h6>
+        
+        <div class="price-rating-container">
+            <p class="book-price mb-0">{{ "%.2f zł"|format(book.cena|float) }}</p>
+            <div class="rating-display">
+                {% if book.srednia_ocen and book.srednia_ocen > 0 %}
+                    <span class="badge bg-warning text-dark"> {# Bootstrap default, can be customized further #}
+                        <i class="bi bi-star-fill"></i> {{ "%.1f"|format(book.srednia_ocen|float) }}
+                        <span class="rating-count text-muted small">({{ book.liczba_ocen }})</span>
+                    </span>
+                {% else %}
+                     <span class="badge bg-light text-muted">Brak ocen</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="book-tags">
+            {% if book.gatunek_ref %}
+                <span class="badge bg-secondary">{{ book.gatunek_ref.nazwa }}</span>
+            {% endif %}
+            {% for kategoria in book.kategorie[:2] %} {# Display first 2 categories #}
+                <span class="badge bg-info">{{ kategoria.nazwa }}</span>
+            {% endfor %}
+        </div>
+        
+        {# Add to Cart Form is now part of the footer for this design #}
+    </div>
+    <div class="card-footer">
+        {% if current_user.is_authenticated and current_user.rola not in ['admin', 'manager'] %}
+            <form action="{{ url_for('cart.add_to_cart') }}" method="POST" class="d-grid">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> {# Explicit hidden field for CSRF token #}
+                <input type="hidden" name="id_ksiazki" value="{{ book.id }}">
+                <input type="hidden" name="ilosc" value="1">
+                <button type="submit" class="btn btn-primary btn-add-to-cart w-100">
+                    <i class="bi bi-cart-plus-fill"></i> Dodaj do koszyka
+                </button>
+            </form>
+        {% elif not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.login', next=request.url_root ~ 'books/details/' ~ book.id ) }}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-box-arrow-in-right"></i> Zaloguj, aby dodać
+            </a>
+        {% else %}
+            {# Admin/Manager sees no add to cart button, or a placeholder if desired #}
+            {# <span class="text-muted small">Funkcje zakupowe niedostępne dla administratora/managera.</span> #}
+        {% endif %}
+        {# Removed "Zobacz szczegóły" from here, as the whole card is clickable #}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_form_field(field, sr_only_label=False, extra_attrs=None) %}
+  <div class="mb-3">
+    {% if not sr_only_label %}
+      {{ field.label(class="form-label") }}
+    {% endif %}
+    {{ field(class="form-control" + (" is-invalid" if field.errors else ""), **(extra_attrs or {})) }}
+    {% if field.errors %}
+      <div class="invalid-feedback">
+        {% for error in field.errors %}
+          <span>{{ error }}</span><br>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if field.description %}
+        <small class="form-text text-muted">{{ field.description }}</small>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro render_submit_button(text, icon_class=None) %}
+    <button type="submit" class="btn btn-primary">
+        {% if icon_class %}<i class="bi {{ icon_class }}"></i> {% endif %}{{ text }}
+    </button>
+{% endmacro %}

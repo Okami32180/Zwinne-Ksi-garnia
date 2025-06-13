@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Szczegóły Zamówienia #{{ zamowienie.id }} - Księgarnia Ebooków{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            {% include 'profile/partials/_profile_nav.html' %}
+        </div>
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="mb-0">Szczegóły Zamówienia #{{ zamowienie.id }}</h1>
+                <a href="{{ url_for('orders.order_history') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Wróć do historii zamówień
+                </a>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Data zamówienia:</strong> {{ zamowienie.data_zamowienia.strftime('%d-%m-%Y %H:%M:%S') }}
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <strong>Status:</strong> 
+                            <span class="fw-medium
+                                {% if zamowienie.status == 'zrealizowane' %}text-success
+                                {% elif zamowienie.status in ['anulowane_przez_uzytkownika', 'blad_platnosci', 'anulowane'] %}text-danger
+                                {% elif zamowienie.status == 'oczekujace_na_platnosc' %}text-warning
+                                {% else %}text-secondary
+                                {% endif %}">
+                                {{ zamowienie.status.replace('_', ' ')|capitalize }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Zamówione produkty</h5>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Produkt</th>
+                                    <th class="text-center">Ilość</th>
+                                    <th class="text-end">Cena jednostkowa</th>
+                                    <th class="text-end">Suma częściowa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in zamowienie.elementy_zamowienia %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('books.book_details', book_id=item.ksiazka.id) }}">{{ item.ksiazka.tytul }}</a><br>
+                                        <small class="text-muted">{{ item.ksiazka.autor }}</small>
+                                    </td>
+                                    <td class="text-center">{{ item.ilosc }}</td>
+                                    <td class="text-end">{{ "%.2f zł"|format(item.cena_jednostkowa_w_momencie_zakupu|float) }}</td>
+                                    <td class="text-end fw-medium">{{ "%.2f zł"|format(item.ilosc * item.cena_jednostkowa_w_momencie_zakupu|float) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold fs-5 table-light">
+                                    <td colspan="3" class="text-end">Suma całkowita:</td>
+                                    <td class="text-end">{{ "%.2f zł"|format(zamowienie.suma_calkowita|float) }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if zamowienie.adres_rozliczeniowy %}
+                            <h5>Adres rozliczeniowy</h5>
+                            <address class="small">
+                                <strong>{{ zamowienie.adres_rozliczeniowy.imie }} {{ zamowienie.adres_rozliczeniowy.nazwisko }}</strong><br>
+                                {{ zamowienie.adres_rozliczeniowy.linia_adresu1 }}<br>
+                                {% if zamowienie.adres_rozliczeniowy.linia_adresu2 %}{{ zamowienie.adres_rozliczeniowy.linia_adresu2 }}<br>{% endif %}
+                                {{ zamowienie.adres_rozliczeniowy.kod_pocztowy }} {{ zamowienie.adres_rozliczeniowy.miasto }}<br>
+                                {{ zamowienie.adres_rozliczeniowy.kraj }}<br>
+                                {% if zamowienie.adres_rozliczeniowy.numer_telefonu %}Telefon: {{ zamowienie.adres_rozliczeniowy.numer_telefonu }}{% endif %}
+                            </address>
+                            {% else %}
+                            <p class="text-muted">Brak adresu rozliczeniowego dla tego zamówienia.</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Informacje o płatności</h5>
+                            <p class="small">
+                                <strong>Metoda płatności:</strong> {{ zamowienie.metoda_platnosci or 'Nie określono' }}<br>
+                                {% if zamowienie.id_platnosci_gateway %}
+                                <strong>ID transakcji:</strong> {{ zamowienie.id_platnosci_gateway }}
+                                {% endif %}
+                            </p>
+                            {% if zamowienie.status == 'zrealizowane' %}
+                                <a href="{{ url_for('profile.my_ebooks') }}" class="btn btn-success btn-sm">
+                                    <i class="bi bi-download"></i> Przejdź do pobierania ebooków
+                                </a>
+                            {% elif zamowienie.status == 'oczekujace_na_platnosc' %}
+                                {# Add a "Pay Now" button if applicable #}
+                                <button class="btn btn-warning btn-sm" disabled>Oczekuje na płatność</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

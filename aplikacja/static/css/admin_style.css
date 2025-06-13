@@ -1,0 +1,132 @@
+/* Admin Panel Specific Styles */
+
+/* Ensure main content area doesn't overlap with fixed main navbar if admin_base still extends base.html */
+/* body {
+    padding-top: 56px; /* Height of the main public navbar */
+/* } */
+
+.admin-wrapper {
+    display: flex;
+    /* min-height: calc(100vh - 56px); /* Adjust if admin_base doesn't extend base.html or main navbar height changes */
+}
+
+.admin-sidebar {
+    width: 260px; /* Fixed width for the sidebar */
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    background-color: #343a40; /* Dark sidebar */
+    color: #adb5bd; /* Light text color for sidebar */
+    padding-top: 1rem; /* Spacing from top */
+    /* position: fixed; /* If you want a fixed sidebar that doesn't scroll with content */
+    /* top: 56px; /* Align below main navbar if fixed */
+    /* bottom: 0; */
+    /* overflow-y: auto; */
+}
+
+.admin-sidebar .nav-link {
+    color: #adb5bd;
+    padding: 0.75rem 1.25rem;
+    border-left: 3px solid transparent; /* For active state indicator */
+    font-size: 0.95rem;
+}
+
+.admin-sidebar .nav-link:hover {
+    color: #ffffff;
+    background-color: #495057; /* Slightly lighter dark on hover */
+    border-left-color: #0d6efd; /* Bootstrap primary blue */
+}
+
+.admin-sidebar .nav-link.active {
+    color: #ffffff;
+    font-weight: 500;
+    background-color: #0d6efd; /* Active link highlight */
+    border-left-color: #ffffff; /* White indicator for active link */
+}
+
+.admin-sidebar .nav-link i.bi {
+    margin-right: 0.75rem;
+    width: 20px; /* Consistent icon width */
+    text-align: center; /* Center icons */
+    font-size: 1.1em; /* Slightly larger icons */
+}
+
+.admin-sidebar .dropdown-toggle::after {
+    margin-left: auto; /* Push dropdown arrow to the right */
+}
+
+.admin-sidebar .nav-item hr.dropdown-divider { /* If using hr inside nav-items for separation */
+    border-top: 1px solid #495057; /* Darker separator */
+    margin: 0.5rem 1.25rem;
+}
+.admin-sidebar .nav-item .text-muted.small.text-uppercase {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #6c757d !important; /* Ensure muted color is distinct */
+}
+
+
+.admin-content {
+    flex-grow: 1; /* Allow content to take remaining space */
+    padding: 2rem;
+    background-color: #f8f9fa; /* Light grey for content area */
+    /* margin-left: 260px; /* If sidebar is fixed */
+}
+
+/* Card styling in admin */
+.admin-content .card {
+    border: 1px solid #dee2e6; /* Standard Bootstrap card border */
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); /* Softer shadow */
+}
+
+.admin-content .card-header {
+    background-color: #e9ecef; /* Light grey card header */
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 500;
+}
+
+/* Table styling in admin */
+.admin-content .table {
+    background-color: #fff; /* White background for tables */
+}
+.admin-content .table thead th {
+    background-color: #f8f9fa; /* Very light grey for table headers */
+    font-weight: 500;
+}
+.admin-content .table-hover tbody tr:hover {
+    background-color: #f1f3f5; /* Light hover for table rows */
+}
+
+/* Button styling in admin */
+.admin-content .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+.admin-content .btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+.admin-content .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+/* Forms in admin */
+.admin-content .form-control, .admin-content .form-select {
+    font-size: 0.9rem; /* Slightly smaller form inputs */
+}
+
+/* Dashboard specific (example) */
+.dashboard-stat-card .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.dashboard-stat-card .stat-icon {
+    font-size: 3rem; /* Large icons for stat cards */
+    margin-bottom: 0.5rem;
+}
+.dashboard-stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+}

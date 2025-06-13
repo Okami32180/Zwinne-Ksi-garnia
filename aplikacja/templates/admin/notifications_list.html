@@ -1,0 +1,86 @@
+{% extends "admin/admin_base.html" %}
+{% from "partials/_macros.html" import render_pagination %}
+
+{% block admin_title %}Powiadomienia Systemowe{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Powiadomienia Systemowe</h1>
+    {% if notifications_pagination and notifications_pagination.items and notifications_pagination.items|selectattr('czy_przeczytane', 'false')|list|length > 0 %}
+    <form action="{{ url_for('admin.mark_all_as_read') }}" method="POST" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-check2-all"></i> Oznacz wszystkie jako przeczytane
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% if notifications_pagination and notifications_pagination.items %}
+<div class="list-group shadow-sm">
+    {% for notification in notifications_pagination.items %}
+    <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 rounded {% if not notification.czy_przeczytane %}list-group-item-warning{% endif %}">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+                <i class="bi 
+                    {% if notification.typ == 'nowe_zamowienie' %}bi-cart-check-fill text-success
+                    {% elif notification.typ == 'nowy_uzytkownik' %}bi-person-plus-fill text-primary
+                    {% elif notification.typ == 'zadanie_resetu_hasla' %}bi-key-fill text-info
+                    {% elif notification.typ == 'haslo_zresetowane' %}bi-shield-lock-fill text-info
+                    {% elif notification.typ == 'platnosc_zrealizowana' %}bi-credit-card-2-front-fill text-success
+                    {% elif notification.typ == 'blad_platnosci' %}bi-exclamation-triangle-fill text-danger
+                    {% elif notification.typ == 'zamowienie_anulowane' %}bi-cart-x-fill text-warning
+                    {% else %}bi-bell-fill text-secondary
+                    {% endif %} me-2"></i>
+                {{ notification.typ.replace('_', ' ')|capitalize }}
+            </h5>
+            <small class="text-muted" title="{{ notification.data_utworzenia.strftime('%Y-%m-%d %H:%M:%S') }}">
+                {{ notification.data_utworzenia.strftime('%d-%m-%Y %H:%M') }}
+            </small>
+        </div>
+        <p class="mb-1">{{ notification.tresc|safe }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                {% if notification.zglaszajacy_uzytkownik %}
+                    Zgłaszający: {{ notification.zglaszajacy_uzytkownik.login }} |
+                {% endif %}
+                {% if notification.docelowy_uzytkownik %}
+                    Dla: {{ notification.docelowy_uzytkownik.login }}
+                {% elif notification.rola_docelowa %}
+                    Dla roli: {{ notification.rola_docelowa|capitalize }}
+                {% endif %}
+            </small>
+            <div>
+                {% if notification.link_docelowy %}
+                    <a href="{{ notification.link_docelowy }}" class="btn btn-sm btn-outline-info me-2" target="_blank">
+                        <i class="bi bi-link-45deg"></i> Przejdź
+                    </a>
+                {% endif %}
+                {% if not notification.czy_przeczytane %}
+                <form action="{{ url_for('admin.mark_as_read', notification_id=notification.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-check-lg"></i> Oznacz jako przeczytane
+                    </button>
+                </form>
+                {% else %}
+                 <span class="badge bg-light text-dark"><i class="bi bi-check-circle"></i> Przeczytane {{ notification.data_przeczytania.strftime('%d-%m-%y %H:%M') if notification.data_przeczytania else ''}}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    {{ render_pagination(notifications_pagination, 'admin.list_notifications') }}
+</div>
+
+{% else %}
+<div class="alert alert-success text-center" role="alert">
+    <i class="bi bi-bell-slash-fill fs-3"></i><br>
+    Brak powiadomień systemowych. Wszystko w porządku!
+</div>
+{% endif %}
+
+{% endblock %}
